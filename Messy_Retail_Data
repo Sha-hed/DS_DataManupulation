@@ -1,0 +1,82 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Mount Google Drive (run this once per session)
+from google.colab import drive
+drive.mount('/content/drive')
+
+# Set your file path - adjust if needed
+file_path = "/content/drive/MyDrive/Colab_Notebooks/messy_retail_data.csv"
+
+# Load the dataset
+df = pd.read_csv(file_path)
+
+# Step 1: Understand the data
+
+# df.head()
+# df.info()
+# df.describe()
+# df.isnull().sum()
+# df.duplicated().sum()
+
+# Step 2: Remove duplicate rows
+
+df = df.drop_duplicates()
+
+#✅ Step 3: Strip whitespaces from column names
+df.columns = df.columns.str.strip()
+
+df.head()
+
+#  Step 4: Fix leading/trailing whitespaces in string columns 
+
+df['Customer ID'] = df['Customer ID'].str.strip()
+df['Store Location'] = df['Store Location'].str.strip()
+df['Product Name'] = df['Product Name'].str.strip()
+
+# ✅ Step 5: Remove special characters from product names
+
+df['Product Name'] = df['Product Name'].str.replace('[^a-zA-Z0-9 ]', '', regex=True)
+
+
+# ✅ Step 6: Handle missing values
+
+df.isnull().sum()
+
+
+# df.head()
+
+# ✅ Step 6: Handle missing values
+
+df['Quantity'].fillna(df['Quantity'].median(), inplace=True)
+df['Total Price'].fillna(df['Total Price'].mean(), inplace=True)
+df['Price per Unit'].fillna(df['Price per Unit'].mean(), inplace=True)
+
+
+
+df['Total Price']  = df['Quantity'] * df['Price per Unit']
+
+
+df.info()
+
+df['Product Category'].value_counts()
+
+df['Product Category'] = df['Product Category'].replace({ 'Tys' : 'Toys'})
+
+df['Date']  = pd.to_datetime(df['Date'])
+
+
+# ✅ Step 10: Optional – Check and filter for outliers
+
+df = df[df['Price per Unit']<1000]
+df = df[df['Quantity']>0]
+
+
+
+
+print(df.info())
+print(df.head())
+
+
